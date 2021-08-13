@@ -9,37 +9,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class OptParamParser {
+import org.codejive.attocli.ArgsParser.Args;
+
+public class OptsParamsParser {
     private Set<String> required;
 
-    public static OptParamParser create() {
-        return new OptParamParser();
+    public static OptsParamsParser create() {
+        return new OptsParamsParser();
     }
 
-    public class ParseResult {
+    public class OptsParams {
         public final Map<String, Object> options;
         public final List<String> parameters;
 
-        ParseResult(Map<String, Object> options, List<String> parameters) {
+        OptsParams(Map<String, Object> options, List<String> parameters) {
             this.options = Collections.unmodifiableMap(options);
             this.parameters = Collections.unmodifiableList(parameters);
         }
     }
 
-    public OptParamParser() {
+    public OptsParamsParser() {
         required = new HashSet<>();
     }
 
-    public OptParamParser required(String... optionNames) {
+    public OptsParamsParser required(String... optionNames) {
         required.addAll(Arrays.asList(optionNames));
         return this;
     }
 
-    public ParseResult parse(String... args) {
-        return parse(Args.parse(args));
+    public OptsParams parse(String... args) {
+        return parse(ArgsParser.create().parse(args));
     }
 
-    public ParseResult parse(Args args) {
+    public OptsParams parse(Args args) {
         Map<String, Object> options = new HashMap<>();
         List<String> parameters = new ArrayList<>();
         while (args.hasNext()) {
@@ -54,6 +56,6 @@ public class OptParamParser {
                 parameters.add(args.value());
             }
         }
-        return new ParseResult(options, parameters);
+        return new OptsParams(options, parameters);
     }
 }

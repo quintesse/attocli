@@ -12,7 +12,7 @@ public class OptParamTest {
 
     @Test
     public void testFlagArg() {
-        OptParamParser.ParseResult result = OptParamParser.create().parse("--flag", "arg");
+        OptsParamsParser.OptsParams result = OptsParamsParser.create().parse("--flag", "arg");
         assertThat(result.options, aMapWithSize(1));
         assertThat(result.options, hasEntry("flag", null));
         assertThat(result.parameters, hasSize(1));
@@ -21,7 +21,7 @@ public class OptParamTest {
 
     @Test
     public void testOptionAppendedValueArg() {
-        OptParamParser.ParseResult result = OptParamParser.create().parse("--option=foo", "arg");
+        OptsParamsParser.OptsParams result = OptsParamsParser.create().parse("--option=foo", "arg");
         assertThat(result.options, aMapWithSize(1));
         assertThat(result.options, hasEntry("option", "foo"));
         assertThat(result.parameters, hasSize(1));
@@ -30,7 +30,7 @@ public class OptParamTest {
 
     @Test
     public void testOptionAppendedEmptyArg() {
-        OptParamParser.ParseResult result = OptParamParser.create().parse("--option=", "arg");
+        OptsParamsParser.OptsParams result = OptsParamsParser.create().parse("--option=", "arg");
         assertThat(result.options, aMapWithSize(1));
         assertThat(result.options, hasEntry("option", ""));
         assertThat(result.parameters, hasSize(1));

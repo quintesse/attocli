@@ -12,12 +12,14 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import org.codejive.attocli.ArgsParser.Args;
+
 public class ArgsTest {
 
     @Test
     public void testFlagArg() {
         boolean hasFlag = false;
-        Args args = Args.parse("--flag", "arg");
+        Args args = ArgsParser.create().parse("--flag", "arg");
         while (args.hasOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
@@ -40,7 +42,7 @@ public class ArgsTest {
         boolean hasOpt = false;
         String val = null;
         String optionalVal = null;
-        Args args = Args.parse("--option=foo", "arg");
+        Args args = ArgsParser.create().parse("--option=foo", "arg");
         while (args.hasOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
@@ -67,7 +69,7 @@ public class ArgsTest {
         boolean hasOpt = false;
         String val = null;
         String optionalVal = null;
-        Args args = Args.parse("--option=", "arg");
+        Args args = ArgsParser.create().parse("--option=", "arg");
         while (args.hasOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
@@ -94,7 +96,7 @@ public class ArgsTest {
         boolean hasOpt = false;
         String val = null;
         String optionalVal = null;
-        Args args = Args.parse("--option", "foo", "arg");
+        Args args = ArgsParser.create().parse("--option", "foo", "arg");
         while (args.hasOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
@@ -119,7 +121,7 @@ public class ArgsTest {
     @Test
     public void testRestEmpty() {
         boolean hasFlag = false;
-        Args args = Args.parse("--flag");
+        Args args = ArgsParser.create().parse("--flag");
         args.next();
         List<String> rest = args.rest();
         assertThat(rest, empty());
@@ -128,7 +130,7 @@ public class ArgsTest {
     @Test
     public void testRestOne() {
         boolean hasFlag = false;
-        Args args = Args.parse("--flag", "one");
+        Args args = ArgsParser.create().parse("--flag", "one");
         args.next();
         List<String> rest = args.rest();
         assertThat(rest.size(), is(1));
@@ -138,7 +140,7 @@ public class ArgsTest {
     @Test
     public void testRestMulti() {
         boolean hasFlag = false;
-        Args args = Args.parse("--flag", "one", "two", "three");
+        Args args = ArgsParser.create().parse("--flag", "one", "two", "three");
         args.next();
         List<String> rest = args.rest();
         assertThat(rest.size(), is(3));
