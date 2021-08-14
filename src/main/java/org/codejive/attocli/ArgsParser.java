@@ -69,6 +69,7 @@ public class ArgsParser {
             return args.removeFirst();
         }
 
+        @Override
         public String next() {
             currentArg = pop();
             currentValue = null;
@@ -88,6 +89,10 @@ public class ArgsParser {
         public boolean isOption() {
             assertArgAvailable();
             return isOption(currentArg);
+        }
+
+        public boolean isOptionWithValue() {
+            return isOption() && optionalValue() != null;
         }
 
         public String name() {

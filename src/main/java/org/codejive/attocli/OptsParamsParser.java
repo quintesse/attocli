@@ -50,10 +50,10 @@ public class OptsParamsParser {
         while (args.hasNext()) {
             args.next();
             if (args.isOption()) {
-                if (needsValue.apply(args.name())) {
+                if (args.isOptionWithValue() || needsValue.apply(args.name())) {
                     options.put(args.name(), args.value());
                 } else {
-                    options.put(args.name(), args.optionalValue());
+                    options.put(args.name(), null);
                 }
             } else {
                 parameters.add(args.value());
