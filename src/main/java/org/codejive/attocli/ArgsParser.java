@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 public class ArgsParser {
@@ -54,6 +55,12 @@ public class ArgsParser {
             return hasNext() && isOption(peek());
         }
 
+        private void assertArgAvailable() {
+            if (currentArg == null) {
+                throw new NoSuchElementException();
+            }
+        }
+
         private String peek() {
             return args.peekFirst();
         }
@@ -79,6 +86,7 @@ public class ArgsParser {
         }
 
         public boolean isOption() {
+            assertArgAvailable();
             return isOption(currentArg);
         }
 

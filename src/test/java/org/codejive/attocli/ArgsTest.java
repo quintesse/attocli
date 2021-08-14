@@ -1,8 +1,10 @@
 package org.codejive.attocli;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -145,5 +147,17 @@ public class ArgsTest {
         List<String> rest = args.rest();
         assertThat(rest.size(), is(3));
         assertThat(rest, contains("one", "two", "three"));
+    }
+
+    @Test
+    public void testNextError() {
+        Args args = ArgsParser.create().parse();
+        Assertions.assertThrows(NoSuchElementException.class, () -> args.next());
+    }
+
+    @Test
+    public void testAccessError() {
+        Args args = ArgsParser.create().parse();
+        Assertions.assertThrows(NoSuchElementException.class, () -> args.isOption());
     }
 }
