@@ -50,6 +50,10 @@ public class ArgsParser {
             return !args.isEmpty();
         }
 
+        public boolean hasNextOption() {
+            return hasNext() && isOption(peek());
+        }
+
         private String peek() {
             return args.peekFirst();
         }
@@ -76,10 +80,6 @@ public class ArgsParser {
 
         public boolean isOption() {
             return isOption(currentArg);
-        }
-
-        public boolean hasOption() {
-            return hasNext() && isOption(peek());
         }
 
         public String name() {

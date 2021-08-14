@@ -20,7 +20,7 @@ public class ArgsTest {
     public void testFlagArg() {
         boolean hasFlag = false;
         Args args = ArgsParser.create().parse("--flag", "arg");
-        while (args.hasOption()) {
+        while (args.hasNextOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
             switch (args.name()) {
@@ -43,7 +43,7 @@ public class ArgsTest {
         String val = null;
         String optionalVal = null;
         Args args = ArgsParser.create().parse("--option=foo", "arg");
-        while (args.hasOption()) {
+        while (args.hasNextOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
             switch (args.name()) {
@@ -70,7 +70,7 @@ public class ArgsTest {
         String val = null;
         String optionalVal = null;
         Args args = ArgsParser.create().parse("--option=", "arg");
-        while (args.hasOption()) {
+        while (args.hasNextOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
             switch (args.name()) {
@@ -97,7 +97,7 @@ public class ArgsTest {
         String val = null;
         String optionalVal = null;
         Args args = ArgsParser.create().parse("--option", "foo", "arg");
-        while (args.hasOption()) {
+        while (args.hasNextOption()) {
             args.next();
             assertThat(args.isOption(), is(true));
             switch (args.name()) {
