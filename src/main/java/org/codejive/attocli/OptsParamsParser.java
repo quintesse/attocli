@@ -1,18 +1,17 @@
 package org.codejive.attocli;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.codejive.attocli.ArgsParser.Args;
 
 public class OptsParamsParser {
-    private Set<String> required;
+    private Function<String, Boolean> needsValue = (String) -> false;
 
     public static OptsParamsParser create() {
         return new OptsParamsParser();
@@ -29,11 +28,15 @@ public class OptsParamsParser {
     }
 
     public OptsParamsParser() {
-        required = new HashSet<>();
     }
 
-    public OptsParamsParser required(String... optionNames) {
-        required.addAll(Arrays.asList(optionNames));
+    public OptsParamsParser needsValue(String... options) {
+        this.needsValue = of(options);
+        return this;
+    }
+
+    public OptsParamsParser needsValue(Function<String, Boolean> needsValue) {
+        this.needsValue = needsValue;
         return this;
     }
 
@@ -47,7 +50,7 @@ public class OptsParamsParser {
         while (args.hasNext()) {
             args.next();
             if (args.isOption()) {
-                if (required.contains(args.name())) {
+                if (needsValue.apply(args.name())) {
                     options.put(args.name(), args.value());
                 } else {
                     options.put(args.name(), args.optionalValue());
@@ -57,5 +60,9 @@ public class OptsParamsParser {
             }
         }
         return new OptsParams(options, parameters);
+    }
+
+    public static Function<String, Boolean> of(String... values) {
+        return Set.of(values)::contains;
     }
 }
