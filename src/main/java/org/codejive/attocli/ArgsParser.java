@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 public class ArgsParser {
     private DefaultArgParser defaultArgParser = DefaultArgParser.create();
     private BiFunction<String, Supplier<String>, Arg> argParser = defaultArgParser::parse;
-    private boolean mixedArgs = true;
+    private Function<Iterator<Arg>, Iterator<Arg>> until = Function.identity();
 
     public static ArgsParser create() {
         return new ArgsParser();
@@ -43,8 +43,12 @@ public class ArgsParser {
         return this;
     }
 
-    public ArgsParser mixedArgs(boolean mixedArgs) {
-        this.mixedArgs = mixedArgs;
+    public ArgsParser commandMode() {
+        return until(ArgsParser::stopAtFirstParameter);
+    }
+
+    public ArgsParser until(Function<Iterator<Arg>, Iterator<Arg>> until) {
+        this.until = until;
         return this;
     }
 
@@ -55,24 +59,38 @@ public class ArgsParser {
     public Args parse(Collection<String> args) {
         ArrayDeque<String> argsDeque = new ArrayDeque<>(args);
         Iterator<Arg> iter = new Iterator<Arg>() {
-            private boolean paramFound;
-            
             @Override
             public boolean hasNext() {
-                return !argsDeque.isEmpty() && (mixedArgs || !paramFound);
+                return !argsDeque.isEmpty();
             }
 
             @Override
             public Arg next() {
-                Arg arg = argParser.apply(argsDeque.removeFirst(), argsDeque::pollFirst);
-                paramFound |= !arg.isOption();
-                return arg;
+                return argParser.apply(argsDeque.removeFirst(), argsDeque::pollFirst);
             }
         };
+        iter = until.apply(iter);
         Spliterator<Arg> spliter = Spliterators.spliteratorUnknownSize(iter, Spliterator.NONNULL | Spliterator.ORDERED);
         List<Arg> argsList = StreamSupport.stream(spliter, false).collect(Collectors.toList());
         List<String> rest = new ArrayList<>(argsDeque);
         return new Args(argsList, rest);
     }
 
+    public static Iterator<Arg> stopAtFirstParameter(Iterator<Arg> iter) {
+        return new Iterator<Arg>() {
+            private boolean paramFound;
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext() && !paramFound;
+            }
+
+            @Override
+            public Arg next() {
+                Arg arg = iter.next();
+                paramFound |= !arg.isOption();
+                return arg;
+            }
+        };
+    }
 }

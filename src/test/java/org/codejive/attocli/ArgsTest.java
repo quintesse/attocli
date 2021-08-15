@@ -159,8 +159,8 @@ public class ArgsTest {
     }
 
     @Test
-    public void testNonMixed() {
-        Args args = ArgsParser.create().mixedArgs(false).parse("--flag1", "arg1", "--flag2", "arg2", "--flag1");
+    public void testCommandMode() {
+        Args args = ArgsParser.create().commandMode().parse("--flag1", "arg1", "--flag2", "arg2", "--flag1");
 
         Iterator<Arg> iter = args.iterator();
         testOption(iter.next(), "flag1", (String)null);
@@ -181,8 +181,8 @@ public class ArgsTest {
     }
 
     @Test
-    public void testNonMixed2() {
-        Args args = ArgsParser.create().needsValue("option").mixedArgs(false).parse("--option", "foo", "--flag2", "arg2", "--flag1");
+    public void testCommandMode2() {
+        Args args = ArgsParser.create().needsValue("option").commandMode().parse("--option", "foo", "--flag2", "arg2", "--flag1");
 
         Iterator<Arg> iter = args.iterator();
         testOption(iter.next(), "option", "foo");
