@@ -279,7 +279,7 @@ public class ArgsTest {
         assertThat(args.rest(), empty());
     }
 
-    private void testOption(Arg arg, String name, String... values) {
+    static void testOption(Arg arg, String name, String... values) {
         assertThat(arg.isOption(), is(true));
         assertThat(arg, instanceOf(Option.class));
         Option opt = (Option)arg;
@@ -294,7 +294,7 @@ public class ArgsTest {
         }
     }
 
-    private void testParam(Arg arg, String value) {
+    static void testParam(Arg arg, String value) {
         assertThat(arg.isOption(), not(true));
         assertThat(arg, instanceOf(Param.class));
         Param param = (Param)arg;
