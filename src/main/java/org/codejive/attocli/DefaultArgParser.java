@@ -1,5 +1,7 @@
 package org.codejive.attocli;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -89,6 +91,6 @@ public class DefaultArgParser {
     }
 
     public static Function<String, Boolean> of(String... values) {
-        return Set.of(values)::contains;
+        return new HashSet(Arrays.asList(values))::contains;
     }
 }

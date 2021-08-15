@@ -54,7 +54,7 @@ public class ArgsParser {
 
     public Args parse(Collection<String> args) {
         ArrayDeque<String> argsDeque = new ArrayDeque<>(args);
-        Iterator<Arg> iter = new Iterator<>() {
+        Iterator<Arg> iter = new Iterator<Arg>() {
             private boolean paramFound;
             
             @Override

@@ -1,5 +1,6 @@
 package org.codejive.attocli;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,11 @@ public class Args implements Iterable<Arg> {
     }
 
     public Map<String, Option> optionsMap() {
-        return args.stream().filter(Arg::isOption).map(arg -> (Option) arg).collect(Collectors.toMap(Option::name, Function.identity(), (a, b) -> a));
+        return args.stream().filter(Arg::isOption).map(arg -> (Option) arg).collect(Collectors.toMap(Option::name, Function.identity(), (a, b) -> {
+            List<String> values = new ArrayList<>(a.values());
+            values.addAll(b.values());
+            return new Option(a.name(), values);
+        }));
     }
 
     public List<Param> params() {
