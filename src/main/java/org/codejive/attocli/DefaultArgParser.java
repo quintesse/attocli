@@ -49,21 +49,19 @@ public class DefaultArgParser {
     }
 
     // Returns the given argument without any leading dashes (single or double)
-    private static String dashless(String arg) {
-        if (arg.startsWith("--")) {
-            arg = arg.substring(2);
-        } else if (arg.startsWith("-")) {
-            arg = arg.substring(1);
+    private static boolean isOption(String arg) {
+        if (arg.startsWith("--") && arg.length() > 2) {
+            return true;
+        } else if (arg.startsWith("-") && arg.length() > 1) {
+            return true;
         } else {
-            return null;
+            return false;
         }
-        return arg;
     }
 
     // Returns the given argument without any leading dashes (single or double)
     private static String defaultOptionName(String arg) {
-        arg = dashless(arg);
-        if (arg == null) {
+        if (!isOption(arg)) {
             return null;
         }
         int p = arg.indexOf('=');
@@ -78,8 +76,7 @@ public class DefaultArgParser {
     // Returns any value that is appended directly to the option.
     // Returns `null` if no appended value was found.
     private static String defaultOptionValue(String arg) {
-        arg = dashless(arg);
-        if (arg == null) {
+        if (!isOption(arg)) {
             return null;
         }
         int p = arg.indexOf('=');

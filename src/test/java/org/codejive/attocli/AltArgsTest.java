@@ -21,27 +21,27 @@ public class AltArgsTest {
                 .argParser(DefaultArgParser.create()
                         .optionNameParser(AltArgsTest::altOptionName)
                         .optionValueParser(AltArgsTest::altOptionValue)
-                        .needsValue("option2")::parse)
+                        .needsValue("+option2")::parse)
                 .parse("+flag", "+empty:", "+option1:foo", "+option2", "bar");
 
         Iterator<Arg> iter = args.iterator();
-        testOption(iter.next(), "flag", (String)null);
-        testOption(iter.next(), "empty", "");
-        testOption(iter.next(), "option1", "foo");
-        testOption(iter.next(), "option2", "bar");
+        testOption(iter.next(), "+flag", (String)null);
+        testOption(iter.next(), "+empty", "");
+        testOption(iter.next(), "+option1", "foo");
+        testOption(iter.next(), "+option2", "bar");
         assertThat(iter.hasNext(), is(false));
 
         assertThat(args.options(), hasSize(4));
-        testOption(args.options().get(0), "flag", (String)null);
-        testOption(args.options().get(1), "empty", "");
-        testOption(args.options().get(2), "option1", "foo");
-        testOption(args.options().get(3), "option2", "bar");
+        testOption(args.options().get(0), "+flag", (String)null);
+        testOption(args.options().get(1), "+empty", "");
+        testOption(args.options().get(2), "+option1", "foo");
+        testOption(args.options().get(3), "+option2", "bar");
         assertThat(args.optionsMap(), aMapWithSize(4));
-        assertThat(args.optionsMap().keySet(), containsInAnyOrder("flag", "empty", "option1", "option2"));
-        testOption(args.optionsMap().get("flag"), "flag", (String)null);
-        testOption(args.optionsMap().get("empty"), "empty", "");
-        testOption(args.optionsMap().get("option1"), "option1", "foo");
-        testOption(args.optionsMap().get("option2"), "option2", "bar");
+        assertThat(args.optionsMap().keySet(), containsInAnyOrder("+flag", "+empty", "+option1", "+option2"));
+        testOption(args.optionsMap().get("+flag"), "+flag", (String)null);
+        testOption(args.optionsMap().get("+empty"), "+empty", "");
+        testOption(args.optionsMap().get("+option1"), "+option1", "foo");
+        testOption(args.optionsMap().get("+option2"), "+option2", "bar");
 
         assertThat(args.params(), empty());
 
@@ -49,18 +49,12 @@ public class AltArgsTest {
     }
 
     // Returns the given argument without any leading plus sign
-    private static String plusless(String arg) {
-        if (arg.startsWith("+")) {
-            arg = arg.substring(1);
-        } else {
-            return null;
-        }
-        return arg;
+    private static boolean isOption(String arg) {
+        return arg.startsWith("+") && arg.length() > 2;
     }
 
     private static String altOptionName(String arg) {
-        arg = plusless(arg);
-        if (arg == null) {
+        if (!isOption(arg)) {
             return null;
         }
         int p = arg.indexOf(':');
@@ -72,8 +66,7 @@ public class AltArgsTest {
     }
 
     private static String altOptionValue(String arg) {
-        arg = plusless(arg);
-        if (arg == null) {
+        if (!isOption(arg)) {
             return null;
         }
         int p = arg.indexOf(':');
