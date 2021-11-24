@@ -10,6 +10,7 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -17,7 +18,9 @@ import java.util.stream.StreamSupport;
 public class ArgsParser {
     private DefaultArgParser defaultArgParser = DefaultArgParser.create();
     private BiFunction<String, Supplier<String>, Arg> argParser = defaultArgParser::parse;
-    private Function<Iterator<Arg>, Iterator<Arg>> until = Function.identity();
+    private Function<Iterator<Arg>, Iterator<Arg>> transformer = Function.identity();
+    private Predicate<Args> helpAsked = ArgsParser::defaultHelpAsked;
+    private Runnable showHelp = () -> {};
 
     public static ArgsParser create() {
         return new ArgsParser();
@@ -44,11 +47,21 @@ public class ArgsParser {
     }
 
     public ArgsParser commandMode() {
-        return until(ArgsParser::stopAtFirstParameter);
+        return transformer(ArgsParser::stopAtFirstParameter);
     }
 
-    public ArgsParser until(Function<Iterator<Arg>, Iterator<Arg>> until) {
-        this.until = until;
+    public ArgsParser transformer(Function<Iterator<Arg>, Iterator<Arg>> transformer) {
+        this.transformer = transformer;
+        return this;
+    }
+
+    public ArgsParser helpAsked(Predicate<Args> helpAsked) {
+        this.helpAsked = helpAsked;
+        return this;
+    }
+
+    public ArgsParser showHelp(Runnable showHelp) {
+        this.showHelp = showHelp;
         return this;
     }
 
@@ -69,11 +82,15 @@ public class ArgsParser {
                 return argParser.apply(argsDeque.removeFirst(), argsDeque::pollFirst);
             }
         };
-        iter = until.apply(iter);
+        iter = transformer.apply(iter);
         Spliterator<Arg> spliter = Spliterators.spliteratorUnknownSize(iter, Spliterator.NONNULL | Spliterator.ORDERED);
         List<Arg> argsList = StreamSupport.stream(spliter, false).collect(Collectors.toList());
         List<String> rest = new ArrayList<>(argsDeque);
-        return new Args(argsList, rest);
+        return new Args(argsList, rest, helpAsked, showHelp);
+    }
+
+    private static boolean defaultHelpAsked(Args args) {
+        return args.optionsMap().containsKey("-h") || args.optionsMap().containsKey("--help");
     }
 
     public static Iterator<Arg> stopAtFirstParameter(Iterator<Arg> iter) {

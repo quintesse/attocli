@@ -6,15 +6,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Args implements Iterable<Arg> {
     private final List<Arg> args;
     private final List<String> rest;
+    private final Predicate<Args> helpAsked;
+    private final Runnable showHelp;
 
-    Args(List<Arg> args, List<String> rest) {
+    Args(List<Arg> args, List<String> rest, Predicate<Args> helpAsked, Runnable showHelp) {
         this.args = args;
         this.rest = rest;
+        this.helpAsked = helpAsked;
+        this.showHelp = showHelp;
     }
 
     @Override
@@ -40,5 +45,14 @@ public class Args implements Iterable<Arg> {
 
     public List<String> rest() {
         return Collections.unmodifiableList(rest);
+    }
+
+    public boolean showHelp() {
+        if (helpAsked.test(this)) {
+            showHelp.run();
+            return true;
+        } else {
+            return false;
+        }
     }
 }

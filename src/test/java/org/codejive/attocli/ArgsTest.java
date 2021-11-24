@@ -3,6 +3,7 @@ package org.codejive.attocli;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
@@ -277,6 +278,20 @@ public class ArgsTest {
         assertThat(args.params(), empty());
 
         assertThat(args.rest(), empty());
+    }
+
+    @Test
+    public void testHelp() {
+        Args args = ArgsParser.create().parse("--help");
+        assertThat(args.showHelp(), is(true));
+    }
+
+    @Test
+    public void testHelp2() {
+        AtomicBoolean helped = new AtomicBoolean(false);
+        Args args = ArgsParser.create().showHelp(() -> helped.set(true)).parse("--help");
+        assertThat(args.showHelp(), is(true));
+        assertThat(helped.get(), is(true));
     }
 
     static void testOption(Arg arg, String name, String... values) {
